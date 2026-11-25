@@ -16,15 +16,15 @@
 
 | MCU 핀 | 기능 | GPIO 설정 | 연결 |
 |---|---|---|---|
-| PE9 | TIM1_CH1, AF2 | Alternate push-pull / Pull-down / High speed | J1.1 |
-| PE8 | TIM1_CH1N, AF2 | 동일 | J1.3 |
-| PE11 | TIM1_CH2, AF2 | 동일 | J1.4 |
-| PE10 | TIM1_CH2N, AF2 | 동일 | J1.6 |
-| PA0 | ADC1_IN1 | Analog / No pull | Currentsensor1.1 |
+| PC0 | TIM1_CH1, AF2 | Alternate push-pull / Pull-down / High speed | CN11.38 → J1.1 |
+| PA7 | TIM1_CH1N, AF6 | 동일 | CN12.15 → J1.3 |
+| PC1 | TIM1_CH2, AF2 | 동일 | CN11.36 → J1.4 |
+| PE10 | TIM1_CH2N, AF2 | 동일 | CN12.47 → J1.6 |
+| PA0 | ADC1_IN1 | Analog / No pull | CN11.28 ← Currentsensor1.1 |
 | PA13, PA14 | SWD | Serial Wire | ST-LINK |
 | PF0 OSC_IN | HSE 외부 클럭 입력 | Bypass | 보드 ST-LINK MCO 8 MHz |
 
-PE 핀 번호는 MCU 신호명이며 커넥터의 물리적 핀 번호가 아닙니다. NUCLEO 확장 헤더의 해당 PE 신호를 찾아 배선하고 J1의 1번 표시를 확인합니다. `PWMA~` 이름만으로 반전이 생성되지 않으므로 CH1N·CH2N에도 실제 배선이 필요합니다.
+CN11·CN12는 NUCLEO의 ST morpho 헤더입니다. 헤더 미실장 시 PC1은 CN11 36번 패드에 연결하고, 나머지 신호는 [README 배선표](../README.md#배선-요약)의 Zio 헤더를 사용해도 됩니다. H-브리지 J1의 1번 표시를 확인합니다. `PWMA~`와 `PWMB~`는 각각 TIM1_CH1N과 TIM1_CH2N에 연결합니다. [ST 보드 매뉴얼 UM1974, 표 14·22](https://www.st.com/resource/en/user_manual/um1974-stm32-nucleo144-boards-mb1137-stmicroelectronics.pdf)
 
 ## 3. RCC와 Clock Configuration
 
@@ -103,7 +103,7 @@ Center-aligned로 변경하면 샘플·update 횟수와 제어 주기가 달라�
 | Overrun | Data preserved |
 | Hardware channel offset | None |
 
-NVIC → `ADC1 and ADC2 global interrupt`를 Enable, Preemption Priority 1, Subpriority 0으로 둡니다. SysTick Priority는 3입니다. TIM1 update/compare interrupt와 DMA interrupt는 이번 루프에 필요하지 않습니다.
+NVIC → `ADC1 and ADC2 global interrupt`를 Enable, Preemption Priority 1, Subpriority 0으로 둡니다. `System tick timer`(SysTick)의 Preemption Priority는 3, Subpriority는 0으로 둡니다. HAL의 SysTick 주기는 1 ms입니다. TIM1 update/compare interrupt와 DMA interrupt는 이번 루프에 필요하지 않습니다.
 
 CH4 PWM2의 OC4REF는 CNT=2700에서 상승하므로 ADC는 주기 시작 후 **37.5 µs**에 시작됩니다. 36 MHz에서 19.5+12.5 cycles 변환 시간은 약 0.89 µs입니다. 최대 듀티 50%라 왼쪽 상측 OFF 이후에 측정하며 센서가 권선에 직렬이라는 전제를 사용합니다.
 

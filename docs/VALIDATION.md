@@ -50,10 +50,10 @@ make CROSS_COMPILE=/path/to/arm-none-eabi-
 
 | 항목 | 결과 |
 |---|---|
-| text | 12,340 B |
+| text | 12,480 B |
 | data | 20 B |
 | bss | 4,436 B, 4 KiB stack 예약 포함 |
-| FLASH 사용량 | 12,360 B / 512 KiB |
+| FLASH 사용량 | 12,500 B / 512 KiB |
 | RAM 사용량 | 4,448 B / 64 KiB |
 
 CCM 16 KiB는 이 linker script에서 사용하지 않습니다. 이전 사용자 runtime의 object를 재사용하지 않는 새 build 디렉터리에서 표준 라이브러리 링크를 확인했습니다. Makefile 빌드에는 GCC뿐 아니라 newlib-nano/nosys 라이브러리도 필요하며 CI 설치 목록에 포함했습니다. 다른 GCC 버전·옵션에서는 크기와 파일 hash가 달라질 수 있습니다. 생성 binary는 Git에 커밋하지 않으며 workflow에서 기본 출력 차단 빌드를 생성할 수 있습니다. 원격 workflow 실행 성공은 별도의 상태입니다.

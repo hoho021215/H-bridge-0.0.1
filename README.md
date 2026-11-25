@@ -17,17 +17,18 @@
 
 ## 배선 요약
 
-| Hbridge 커넥터 | NUCLEO 신호 | 역할 |
-|---|---|---|
-| J1.1 `PWMA` | PE9 / TIM1_CH1 AF2 | 왼쪽 상측 Q1 |
-| J1.3 `PWMA~` | PE8 / TIM1_CH1N AF2 | 왼쪽 하측 Q2 |
-| J1.4 `PWMB` | PE11 / TIM1_CH2 AF2 | 오른쪽 상측 Q3 |
-| J1.6 `PWMB~` | PE10 / TIM1_CH2N AF2 | 오른쪽 하측 Q4 |
-| J1.2, J1.5 | NUCLEO GND | `3.3GND` |
-| Currentsensor1.1 | PA0 / ADC1_IN1 | 전류 센서 출력 |
-| Currentsensor1.2 | NUCLEO GND | 센서 출력 기준 |
+| Hbridge 커넥터 | NUCLEO MCU 신호 | ST morpho | 기본 Zio |
+|---|---|---|---|
+| J1.1 `PWMA` | PC0 / TIM1_CH1 AF2 | CN11.38 | CN9.3 (A1) |
+| J1.3 `PWMA~` | PA7 / TIM1_CH1N AF6 | CN12.15 | CN7.14 (D11) |
+| J1.4 `PWMB` | PC1 / TIM1_CH2 AF2 | CN11.36 | — |
+| J1.6 `PWMB~` | PE10 / TIM1_CH2N AF2 | CN12.47 | CN10.24 (D40) |
+| Currentsensor1.1 | PA0 / ADC1_IN1 | CN11.28 | CN10.29 (D32) |
+| J1.2·J1.5·Currentsensor1.2 | NUCLEO GND → `3.3GND` | 예: CN11.19 | 예: CN10.22 |
 
-이 PE 핀 배치는 펌웨어에 맞춰 정한 **외부 배선 제안**입니다. 원본 Hbridge 보드에는 STM32가 없습니다. 모터 전원은 `DCV1`에 12 V, 별도 게이트 전원은 `15V1`에 15 V, 로직·센서 전원은 `3.3V1`에 3.3 V입니다. `3.3GND`와 `15GND`는 설계에서 분리되어 있습니다. IC3의 library ID에는 A2, Value에는 A3가 적혀 있으므로 실제 실장품의 감도를 확인하세요.
+위 표는 CubeMX의 PC0·PA7·PC1·PE10 핀 배치를 기준으로 합니다. CN11·CN12의 ST morpho 헤더는 출고 시 미실장일 수 있습니다. 이 경우 PC1은 CN11의 36번 패드에 핀헤더나 신호선을 실장해 연결합니다. 신호마다 표의 연결 위치 중 한 곳을 사용합니다. [ST 보드 매뉴얼 UM1974, 표 14·22](https://www.st.com/resource/en/user_manual/um1974-stm32-nucleo144-boards-mb1137-stmicroelectronics.pdf)
+
+모터 전원은 `DCV1`에 12 V, 별도 게이트 전원은 `15V1`에 15 V, 로직·센서 전원은 `3.3V1`에 3.3 V입니다. `3.3GND`와 `15GND`는 설계에서 분리되어 있습니다. IC3의 library ID에는 A2, Value에는 A3가 적혀 있으므로 실제 실장품의 감도를 확인하세요.
 
 ## CubeIDE에서 시작
 

@@ -16,9 +16,9 @@ from collections import defaultdict
 
 EXPECTED_COMMON_PADS = 178
 MCU_ASSIGNMENT = {
-    "J1.1": "PE9 / TIM1_CH1 / A_H",
-    "J1.3": "PE8 / TIM1_CH1N / A_L",
-    "J1.4": "PE11 / TIM1_CH2 / B_H",
+    "J1.1": "PC0 / TIM1_CH1 / A_H",
+    "J1.3": "PA7 / TIM1_CH1N / A_L",
+    "J1.4": "PC1 / TIM1_CH2 / B_H",
     "J1.6": "PE10 / TIM1_CH2N / B_L",
     "Currentsensor1.1": "PA0 / ADC1_IN1",
 }

@@ -60,14 +60,21 @@ static void MX_GPIO_Init(void)
 {
     GPIO_InitTypeDef gpio = {0};
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOE_CLK_ENABLE();
     /* All four driver inputs are low before assigning the timer AF. */
-    HAL_GPIO_WritePin(HB_GATE_GPIO_PORT, HB_GATE_GPIO_PINS, GPIO_PIN_RESET);
-    gpio.Pin = HB_GATE_GPIO_PINS;
+    HAL_GPIO_WritePin(GPIOA, HB_GATE_GPIOA_PINS, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOC, HB_GATE_GPIOC_PINS, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOE, HB_GATE_GPIOE_PINS, GPIO_PIN_RESET);
     gpio.Mode = GPIO_MODE_OUTPUT_PP;
     gpio.Pull = GPIO_PULLDOWN;
     gpio.Speed = GPIO_SPEED_FREQ_HIGH;
-    HAL_GPIO_Init(HB_GATE_GPIO_PORT, &gpio);
+    gpio.Pin = HB_GATE_GPIOA_PINS;
+    HAL_GPIO_Init(GPIOA, &gpio);
+    gpio.Pin = HB_GATE_GPIOC_PINS;
+    HAL_GPIO_Init(GPIOC, &gpio);
+    gpio.Pin = HB_GATE_GPIOE_PINS;
+    HAL_GPIO_Init(GPIOE, &gpio);
 }
 
 static void MX_ADC1_Init(void)

@@ -36,12 +36,19 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim)
 {
     if (htim->Instance == TIM1) {
         GPIO_InitTypeDef gpio = {0};
+        __HAL_RCC_GPIOA_CLK_ENABLE();
+        __HAL_RCC_GPIOC_CLK_ENABLE();
         __HAL_RCC_GPIOE_CLK_ENABLE();
-        gpio.Pin = HB_GATE_GPIO_PINS;
         gpio.Mode = GPIO_MODE_AF_PP;
         gpio.Pull = GPIO_PULLDOWN;
         gpio.Speed = GPIO_SPEED_FREQ_HIGH;
         gpio.Alternate = GPIO_AF2_TIM1;
+        gpio.Pin = HB_GATE_GPIOC_PINS;
+        HAL_GPIO_Init(GPIOC, &gpio);
+        gpio.Pin = HB_GATE_GPIOE_PINS;
         HAL_GPIO_Init(GPIOE, &gpio);
+        gpio.Pin = HB_GATE_GPIOA_PINS;
+        gpio.Alternate = GPIO_AF6_TIM1;
+        HAL_GPIO_Init(GPIOA, &gpio);
     }
 }

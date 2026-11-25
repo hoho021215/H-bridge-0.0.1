@@ -28,14 +28,14 @@ IC1·IC2는 **UCC21331CDR**이고 Q1–Q4는 **PSMN014-40YS_115**이다. IC1은 
 
 | J1 핀 | PCB net | 실제 경로 | 이번 펌웨어의 NUCLEO 핀 |
 |---|---|---|---|
-| 1 | `PWMA` | R1 → IC1 INA → Q1 상측 | PE9, TIM1_CH1, A_H |
-| 2 | `3.3GND` | 드라이버 입력측 GND | NUCLEO GND |
-| 3 | `PWMA~` | R2 → IC1 INB → Q2 하측 | PE8, TIM1_CH1N, A_L |
-| 4 | `PWMB` | R3 → IC2 INA → Q3 상측 | PE11, TIM1_CH2, B_H |
-| 5 | `3.3GND` | 드라이버 입력측 GND | NUCLEO GND |
-| 6 | `PWMB~` | R4 → IC2 INB → Q4 하측 | PE10, TIM1_CH2N, B_L |
+| 1 | `PWMA` | R1 → IC1 INA → Q1 상측 | CN11.38, PC0, TIM1_CH1 AF2 |
+| 2 | `3.3GND` | 드라이버 입력측 GND | NUCLEO GND (예: CN11.19) |
+| 3 | `PWMA~` | R2 → IC1 INB → Q2 하측 | CN12.15, PA7, TIM1_CH1N AF6 |
+| 4 | `PWMB` | R3 → IC2 INA → Q3 상측 | CN11.36, PC1, TIM1_CH2 AF2 |
+| 5 | `3.3GND` | 드라이버 입력측 GND | NUCLEO GND (예: CN11.19) |
+| 6 | `PWMB~` | R4 → IC2 INB → Q4 하측 | CN12.47, PE10, TIM1_CH2N AF2 |
 
-원본 보드에는 STM32가 없다. 위 PE9/PE8/PE11/PE10 배치는 이번 펌웨어에 맞춰 제안한 외부 배선이다. J1 커넥터의 실제 1번 표시를 확인하여 연결해야 한다. 기존 PWM+DIR+EN 인터페이스용 예제는 이 보드의 구동 코드로 사용할 수 없다.
+위 표는 CubeMX의 PC0·PA7·PC1·PE10 배치에 맞춘 외부 배선이다. NUCLEO의 CN11·CN12는 ST morpho 헤더다. 헤더 실장 여부와 H-브리지 J1의 1번 표시를 확인하며, Zio를 사용할 수 있는 신호는 [README 배선표](../README.md#배선-요약)에 정리했다. [ST 보드 매뉴얼 UM1974, 표 14·22](https://www.st.com/resource/en/user_manual/um1974-stm32-nucleo144-boards-mb1137-stmicroelectronics.pdf)
 
 ## EN, dead time, 풀다운
 
@@ -57,7 +57,7 @@ complementary PWM에서 CCR=0은 하측 MOSFET이 켜지는 제동 상태가 될
 | `15V1` | `+15V` | `15GND` | 별도 게이트 드라이버 전원 |
 | `3.3V1` | `+3.3V` | `3.3GND` | 드라이버 입력측·센서 전원 |
 | `Motorout1` | `OUT+` | `OUT-` | 2선 브러시 DC 모터 |
-| `Currentsensor1` | `STM32_ADC` | `3.3GND` | PA0/ADC1_IN1 및 NUCLEO GND로 연결 |
+| `Currentsensor1` | `STM32_ADC` | `3.3GND` | CN11.28의 PA0/ADC1_IN1 및 NUCLEO GND로 연결 |
 
 `DCV`와 `+15V`는 서로 다른 net이다. UCC21331CDR의 권장 VDD 최솟값은 **13.5V**이므로 모터용 12V만 게이트 전원으로 사용하면 이 조건을 만족하지 못한다. `15V1`과 `DCV1`의 전원측 GND는 모두 `15GND`이다.
 
