@@ -14,10 +14,10 @@ jobs:
       - name: Schematic and PCB connectivity
         if: ${{ hashFiles('hardware/Hbridge.kicad_sch', 'hardware/Hbridge.kicad_pcb') != '' }}
         run: python3 scripts/check_hardware_nets.py
-      - name: Install ARM compiler
+      - name: Install ARM compiler and standard C runtime
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi libnewlib-arm-none-eabi libnewlib-dev
       - name: ARM build (outputs inhibited by default)
         run: make -j2
       - uses: actions/upload-artifact@v4

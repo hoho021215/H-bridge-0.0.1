@@ -29,9 +29,25 @@
 
 이 PE 핀 배치는 펌웨어에 맞춰 정한 **외부 배선 제안**입니다. 원본 Hbridge 보드에는 STM32가 없습니다. 모터 전원은 `DCV1`에 12 V, 별도 게이트 전원은 `15V1`에 15 V, 로직·센서 전원은 `3.3V1`에 3.3 V입니다. `3.3GND`와 `15GND`는 설계에서 분리되어 있습니다. IC3의 library ID에는 A2, Value에는 A3가 적혀 있으므로 실제 실장품의 감도를 확인하세요.
 
-## 빌드
+## CubeIDE에서 시작
 
-Python 3, GNU Make, Arm GNU Toolchain의 `arm-none-eabi-gcc`를 사용합니다.
+**CubeMX Generate Code → 사용자 파일 5개 추가 → CubeIDE Build** 순서입니다. `hb_runtime.c`는 삭제했으며, CubeIDE가 제공하는 표준 C 실행환경을 사용합니다.
+
+```text
+Core/Inc/hb_config.h
+Core/Inc/hb_control.h
+Core/Inc/hb_app.h
+Core/Src/hb_control.c
+Core/Src/hb_app.c
+```
+
+생성된 `main.h`에는 데드타임 상수를, `main.c`에는 App 시작/대기 호출을, `stm32f3xx_it.c`에는 SysTick 감독과 오류 정지 호출을 연결합니다. 복사 위치와 정확한 USER CODE 예제는 [CubeIDE 통합 안내](docs/INTEGRATION_KO.md)에 있습니다. 생성된 main/MSP/HAL 설정/startup/linker 파일은 프로젝트의 것을 유지합니다.
+
+CubeMX가 HAL/CMSIS를 생성한 일반 CubeIDE 프로젝트에는 `fetch_vendor.py`, Makefile, tests를 복사하거나 별도로 실행할 필요가 없습니다.
+
+## 선택 사항: PC 명령행 빌드·검증
+
+Python 3, GNU Make, 표준 newlib-nano/nosys 라이브러리를 포함한 Arm GNU Toolchain의 `arm-none-eabi-gcc`를 사용합니다.
 
 ```sh
 python3 scripts/fetch_vendor.py
@@ -39,7 +55,7 @@ make
 python3 tests/run_tests.py
 ```
 
-공식 ST HAL·CMSIS는 고정된 Git revision에서 가져오며 해당 라이선스도 함께 다운로드합니다. `Drivers/`와 vendor startup/system 파일은 Git에 중복 보관하지 않습니다. 생성 결과는 `build/hbridge_f303ze.elf`, `.hex`, `.bin`입니다.
+이 보조 경로에서 공식 ST HAL·CMSIS는 고정된 Git revision에서 가져오며 라이선스도 함께 다운로드합니다. `Drivers/`와 vendor startup/system 파일은 Git에 중복 보관하지 않습니다. 명령행 생성 결과는 `build/hbridge_f303ze.elf`, `.hex`, `.bin`입니다. Makefile도 별도 사용자 runtime을 사용하지 않습니다.
 
 `hbridge_f303ze.ioc`는 설정에 맞춰 **수작업으로 작성한 CubeMX 프로필**입니다. CubeMX GUI에서 열기·Generate Code는 이 환경에서 검증하지 않았습니다. 제공된 C 소스의 ARM 컴파일·링크와 GUI 코드 생성을 구분합니다.
 

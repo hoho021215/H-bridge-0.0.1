@@ -1,4 +1,5 @@
-# Standalone reproducible build. CubeIDE can also import this as a Makefile project.
+# Optional command-line verification build using the toolchain's standard C runtime.
+# For normal development, generate a CubeIDE project and copy the five user modules.
 TARGET := hbridge_f303ze
 BUILD := build
 CROSS_COMPILE ?= arm-none-eabi-
@@ -15,9 +16,9 @@ ifneq ($(NEWLIB_INCLUDE),)
 INCLUDES += -isystem $(NEWLIB_INCLUDE)
 endif
 CFLAGS := $(CPU) $(DEFS) $(INCLUDES) -std=c11 -Os -g3 -Wall -Wextra \
- -ffreestanding -fno-builtin -ffunction-sections -fdata-sections -MMD -MP
+ -ffunction-sections -fdata-sections -MMD -MP
 ASFLAGS := $(CPU) $(DEFS) $(INCLUDES) -x assembler-with-cpp -MMD -MP
-LDFLAGS := $(CPU) -nostdlib -TSTM32F303ZETX_FLASH.ld \
+LDFLAGS := $(CPU) --specs=nano.specs --specs=nosys.specs -static -TSTM32F303ZETX_FLASH.ld \
  -Wl,--gc-sections,-Map=$(BUILD)/$(TARGET).map -Wl,--print-memory-usage
 HAL_SRC := $(addprefix Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_,\
  hal.c hal_adc.c hal_adc_ex.c hal_cortex.c hal_dma.c hal_gpio.c \
@@ -30,6 +31,8 @@ OBJECTS := $(addprefix $(BUILD)/obj/,$(C_SRC:.c=.o) $(ASM_SRC:.s=.o))
 
 .PHONY: all vendor clean size
 all: $(BUILD)/$(TARGET).elf $(BUILD)/$(TARGET).hex $(BUILD)/$(TARGET).bin
+# Rebuild when compiler/runtime flags change, including updates from older builds.
+$(OBJECTS): Makefile
 vendor:
 	$(PYTHON) scripts/fetch_vendor.py
 $(HAL_SRC) Core/Src/system_stm32f3xx.c $(ASM_SRC): | vendor
@@ -40,8 +43,8 @@ $(BUILD)/obj/%.o: %.c | vendor
 $(BUILD)/obj/%.o: %.s | vendor
 	@mkdir -p $(@D)
 	$(CC) $(ASFLAGS) -c $< -o $@
-$(BUILD)/$(TARGET).elf: $(OBJECTS) STM32F303ZETX_FLASH.ld
-	$(CC) $(OBJECTS) $(LDFLAGS) -lgcc -o $@
+$(BUILD)/$(TARGET).elf: $(OBJECTS) STM32F303ZETX_FLASH.ld Makefile
+	$(CC) $(OBJECTS) $(LDFLAGS) -Wl,--start-group -lc -lm -Wl,--end-group -o $@
 	$(SIZE) $@
 $(BUILD)/$(TARGET).hex: $(BUILD)/$(TARGET).elf
 	$(OBJCOPY) -O ihex $< $@

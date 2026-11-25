@@ -39,24 +39,26 @@ Host GCC에서 `-std=c11 -O2 -Wall -Wextra -Werror -Wpedantic`으로 빌드했�
 
 ### 3. 실제 ARM 컴파일·링크
 
-공식 ST HAL·CMSIS를 고정 revision에서 다운로드하고 **Arm GNU GCC 12.2.1**로 Cortex-M4 hard-float 빌드를 수행했습니다.
+공식 ST HAL·CMSIS를 고정 revision에서 다운로드하고 **Arm GNU GCC 12.2.1**로 Cortex-M4 hard-float 빌드를 수행했습니다. `hb_runtime.c` 삭제 후에는 GCC 기본 CRT와 표준 newlib-nano/nosys(`--specs=nano.specs --specs=nosys.specs`)로 링크합니다.
 
 ```sh
 python3 scripts/fetch_vendor.py
 make CROSS_COMPILE=/path/to/arm-none-eabi-
 ```
 
-기본 출력 차단 빌드와 `HB_HARDWARE_VERIFIED=1` 검증용 빌드 모두 ELF·HEX·BIN 생성에 성공했습니다. ELF는 ARM EABI5 hard-float이며 `arm-none-eabi-nm -u` 결과 unresolved symbol이 없습니다.
+현재 표준 runtime의 기본 출력 차단 빌드에서 ELF·HEX·BIN 생성에 성공했습니다. ELF는 ARM EABI5 hard-float이며 `arm-none-eabi-nm -u` 결과 unresolved symbol이 없습니다. `__libc_init_array`와 메모리 함수는 표준 C 라이브러리, `_init`은 표준 CRT에서 제공하며 대체 사용자 runtime 소스는 추가하지 않았습니다. 이전 버전에서는 기본/출력 허용 두 ARM 빌드도 확인했고, 현재 host 시험은 출력 허용 0/1 양쪽을 계속 검사합니다.
 
 | 항목 | 결과 |
 |---|---|
-| text | 11,952 B |
-| data | 12 B |
-| bss | 4,404 B, 4 KiB stack 예약 포함 |
-| FLASH 사용량 | 11,964 B / 512 KiB |
-| RAM 사용량 | 4,416 B / 64 KiB |
+| text | 12,340 B |
+| data | 20 B |
+| bss | 4,436 B, 4 KiB stack 예약 포함 |
+| FLASH 사용량 | 12,360 B / 512 KiB |
+| RAM 사용량 | 4,448 B / 64 KiB |
 
-CCM 16 KiB는 이 linker script에서 사용하지 않습니다. 다운로드 도구가 없는 깨끗한 소스 복사본에서도 vendor fetch→빌드 경로를 확인했습니다. 다른 GCC 버전·옵션에서는 크기와 파일 hash가 달라질 수 있습니다. 생성 binary는 Git에 커밋하지 않으며 workflow에서 기본 출력 차단 빌드를 생성할 수 있습니다. 원격 workflow 실행 성공은 별도의 상태입니다.
+CCM 16 KiB는 이 linker script에서 사용하지 않습니다. 이전 사용자 runtime의 object를 재사용하지 않는 새 build 디렉터리에서 표준 라이브러리 링크를 확인했습니다. Makefile 빌드에는 GCC뿐 아니라 newlib-nano/nosys 라이브러리도 필요하며 CI 설치 목록에 포함했습니다. 다른 GCC 버전·옵션에서는 크기와 파일 hash가 달라질 수 있습니다. 생성 binary는 Git에 커밋하지 않으며 workflow에서 기본 출력 차단 빌드를 생성할 수 있습니다. 원격 workflow 실행 성공은 별도의 상태입니다.
+
+사용자가 사용할 경로는 [CubeMX 생성 → 파일 5개 추가 → CubeIDE Build](INTEGRATION_KO.md)입니다. 위 명령행 ARM 링크 검증이 CubeIDE GUI에서 생성/빌드까지 시험했다는 뜻은 아닙니다.
 
 ### 4. 회로도·PCB 연결
 
