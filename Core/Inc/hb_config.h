@@ -18,7 +18,6 @@
 #define HB_TIMER_CLOCK_HZ          72000000U
 #define HB_PWM_PERIOD_TICKS        3600U
 #define HB_ADC_TRIGGER_TICKS       2700U
-#define HB_DEADTIME_TICKS          72U   /* CKD=DIV1, 72 MHz => 1 us */
 
 /* PROVISIONAL assumptions, NOT motor datasheet ratings. See MOTOR_ASSUMPTIONS. */
 #define HB_ASSUMED_BUS_V           12.0f

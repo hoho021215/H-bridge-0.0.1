@@ -79,6 +79,8 @@ Break and Dead Time에서는 다음과 같이 설정합니다.
 
 `72 MHz / 3600 = 20 kHz`, 주기는 50 µs입니다. CKD=DIV1, DTG=72는 직접 선형 구간이므로 dead time은 `72/72 MHz = 1 µs`입니다. CH1/CH2의 compare preload도 활성화하여 계산된 듀티를 다음 update부터 적용합니다. App에서 명시적으로 설정합니다.
 
+C 코드의 `HB_DEADTIME_TICKS`는 `Core/Inc/main.h`의 USER CODE Private defines에서만 정의합니다. CubeMX가 main.h를 새로 만들면 [통합 안내](INTEGRATION_KO.md)에 따라 이 정의를 추가합니다. CubeMX Dead Time 설정과 이 상수는 동일해야 하며, App의 초기 설정 검사가 둘의 불일치를 거부합니다.
+
 CH1/CH1N은 Q1/Q2를 상보 구동합니다. CH2의 CCR=0은 Q3 OFF·Q4 ON 상태입니다. **CH2를 PWM2로 바꾸면 이 관계가 반대가 됩니다.** 펌웨어의 초기 설정 검사가 이 오류를 거부합니다.
 
 Center-aligned로 변경하면 샘플·update 횟수와 제어 주기가 달라집니다. 현재의 `Ts=50 µs` 코드를 그대로 사용하지 않습니다.

@@ -12,7 +12,12 @@ extern TIM_HandleTypeDef htim1;
 #define HB_GATE_GPIO_PINS (GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11)
 #define HB_PWM_PERIOD_COUNTS 3600U
 #define HB_ADC_SAMPLE_COMPARE 2700U
+
+/* USER CODE BEGIN Private defines */
+/* Single definition used by TIM1 initialization and the runtime check.
+ * CKD=DIV1, timer clock=72 MHz: DTG=72 gives 1 us dead time. */
 #define HB_DEADTIME_TICKS 72U
+/* USER CODE END Private defines */
 
 void SystemClock_Config(void);
 void Error_Handler(void);

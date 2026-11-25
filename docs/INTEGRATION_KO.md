@@ -32,6 +32,18 @@ Core/Src/hb_app.c
 
 이 파일들을 생성 프로젝트의 같은 위치로 복사합니다. CubeIDE가 `.c` 파일을 build 대상에 포함하는지 확인합니다. CubeIDE의 일반 managed project에서는 제공된 `hb_runtime.c`, 자체 linker script, vendor startup/system 파일을 추가 복사하지 않습니다. 해당 프로젝트의 표준 runtime/startup을 사용합니다.
 
+### main.h — USER CODE Private defines
+
+데드타임 상수는 `hb_config.h` 대신 **`main.h` 한 곳**에서 정의합니다. CubeMX가 새로 생성한 main.h의 해당 USER CODE 영역에 추가합니다.
+
+```c
+/* USER CODE BEGIN Private defines */
+#define HB_DEADTIME_TICKS 72U
+/* USER CODE END Private defines */
+```
+
+`main.c`의 TIM1 초기화와 `hb_app.c`의 설정 검사가 이 값을 함께 사용합니다. CubeMX의 TIM1 Dead Time 설정도 72로 맞춥니다. 이 상수를 추가하지 않고 사용자 모듈만 복사하면 `hb_app.c`가 컴파일되지 않습니다.
+
 ### main.c — USER CODE Includes
 
 ```c
@@ -106,6 +118,7 @@ HB_App_EmergencyStop();
 | 파일 | 수정할 때 |
 |---|---|
 | `hb_config.h` | 센서 감도, 시험 전류 상한, PI gain, 출력 허용 guard |
+| `main.h` | 데드타임 상수 `HB_DEADTIME_TICKS`의 유일한 정의 |
 | `hb_control.c` | 하드웨어 독립 상태·PI 알고리즘 |
 | `hb_app.c` | ADC 콜백, MOE/CCR 적용, 샘플 중단 감시 |
 | `main.c` | 클럭과 ADC/TIM 초기화, App 진입 |
