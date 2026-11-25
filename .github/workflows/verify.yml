@@ -1,0 +1,30 @@
+name: Firmware checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  host-and-arm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Control and mock HAL regressions
+        run: python3 tests/run_tests.py
+      - name: Schematic and PCB connectivity
+        if: ${{ hashFiles('hardware/Hbridge.kicad_sch', 'hardware/Hbridge.kicad_pcb') != '' }}
+        run: python3 scripts/check_hardware_nets.py
+      - name: Install ARM compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends gcc-arm-none-eabi binutils-arm-none-eabi
+      - name: ARM build (outputs inhibited by default)
+        run: make -j2
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hbridge-f303ze-default-inhibited
+          path: |
+            build/*.elf
+            build/*.hex
+            build/*.bin
+            build/*.map

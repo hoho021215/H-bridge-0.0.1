@@ -1,0 +1,13 @@
+/build/
+/Drivers/
+/Core/Startup/
+/Core/Src/system_stm32f3xx.c
+__pycache__/
+*.pyc
+.DS_Store
+/.settings/
+/Debug/
+/Release/
+/hbridge_f303ze/Debug/
+/hardware/*.kicad_sch
+/hardware/*.kicad_pcb

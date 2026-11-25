@@ -1,0 +1,18 @@
+{
+  "note": "Pinned official inputs; run python3 scripts/fetch_vendor.py. Upstream licenses are downloaded beside the inputs.",
+  "stm32f3xx-hal-driver": {
+    "repository": "https://github.com/STMicroelectronics/stm32f3xx-hal-driver",
+    "commit": "664a3bd898dc001d253a47c3e058d4f053cc4da5",
+    "license": "BSD-3-Clause"
+  },
+  "cmsis-device-f3": {
+    "repository": "https://github.com/STMicroelectronics/cmsis-device-f3",
+    "commit": "402c039a0a6d73c31303a05e6a1d6b8b59474fa1",
+    "license": "Apache-2.0"
+  },
+  "CMSIS_5": {
+    "repository": "https://github.com/ARM-software/CMSIS_5",
+    "commit": "55b19837f5703e418ca37894d5745b1dc05e4c91",
+    "license": "Apache-2.0"
+  }
+}
