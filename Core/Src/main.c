@@ -32,6 +32,7 @@ int main(void)
 
 void SystemClock_Config(void)
 {
+    /* ST-LINK의 8 MHz 외부 클럭을 PLL x9로 올려 MCU/TIM1을 72 MHz로 설정합니다. */
     RCC_OscInitTypeDef osc = {0};
     RCC_ClkInitTypeDef clocks = {0};
     RCC_PeriphCLKInitTypeDef peripheral = {0};
@@ -71,6 +72,7 @@ static void MX_GPIO_Init(void)
 
 static void MX_ADC1_Init(void)
 {
+    /* PA0의 센서 전압을 12 bit로 변환합니다. 연속 자유 변환 대신 TIM1 TRGO마다 한 번 측정합니다. */
     ADC_MultiModeTypeDef multi = {0};
     ADC_ChannelConfTypeDef channel = {0};
     hadc1.Instance = ADC1;
@@ -101,6 +103,7 @@ static void MX_ADC1_Init(void)
 
 static void MX_TIM1_Init(void)
 {
+    /* PSC=0, ARR=3599: 72 MHz/3600=20 kHz. CH1/CH2는 상/하측 상보 출력입니다. */
     TIM_ClockConfigTypeDef clock = {0};
     TIM_MasterConfigTypeDef master = {0};
     TIM_OC_InitTypeDef output = {0};
@@ -131,13 +134,14 @@ static void MX_TIM1_Init(void)
     if (HAL_TIM_PWM_ConfigChannel(&htim1, &output, TIM_CHANNEL_1) != HAL_OK) Error_Handler();
     if (HAL_TIM_PWM_ConfigChannel(&htim1, &output, TIM_CHANNEL_2) != HAL_OK) Error_Handler();
     output.OCMode = TIM_OCMODE_PWM2;
+    /* CH4는 외부 핀 없이 주기 시작 후 37.5 us에 ADC를 시작하는 내부 신호입니다. */
     output.Pulse = HB_ADC_SAMPLE_COMPARE;
     if (HAL_TIM_PWM_ConfigChannel(&htim1, &output, TIM_CHANNEL_4) != HAL_OK) Error_Handler();
 
     safety.OffStateRunMode = TIM_OSSR_ENABLE;
     safety.OffStateIDLEMode = TIM_OSSI_ENABLE;
     safety.LockLevel = TIM_LOCKLEVEL_OFF;
-    safety.DeadTime = HB_DEADTIME_TICKS;
+    safety.DeadTime = HB_DEADTIME_TICKS; /* 상/하측 모두 OFF인 전환 간격. 현재 72 ticks=1 us. */
     safety.BreakState = TIM_BREAK_DISABLE;
     safety.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
     safety.BreakFilter = 0U;
@@ -146,7 +150,7 @@ static void MX_TIM1_Init(void)
     safety.Break2Filter = 0U;
     safety.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
     if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &safety) != HAL_OK) Error_Handler();
-    CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE);
+    CLEAR_BIT(TIM1->BDTR, TIM_BDTR_MOE); /* 초기화만으로 모터가 켜지지 않게 출력은 차단합니다. */
     HAL_TIM_MspPostInit(&htim1);
     /* No HAL_TIM_PWM_Start here: it would set MOE. HB_App starts the
      * counter with HAL_TIM_Base_Start and owns every output transition. */
